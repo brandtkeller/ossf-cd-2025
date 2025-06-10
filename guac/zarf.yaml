@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/zarf-dev/zarf/v0.55.6/zarf.schema.json
+kind: ZarfPackageConfig
+
+metadata:
+  name: guac
+  description: GUAC zarf package manifest
+  version: 0.6.2
+
+components:
+  - name: guac
+    required: true
+    manifests:
+      - name: guac-connect
+        namespace: guac
+        files:
+          - connect.yaml
+    charts:
+      - name: guac
+        version: 0.6.2
+        url: https://guacsec.github.io/helm-charts
+        namespace: guac
+        valuesFiles:
+          - values.yaml
+    images:
+      - ghcr.io/guacsec/guac-visualizer:v0.4.10
+      - ghcr.io/guacsec/guac:v0.14.0
+      - nats:2.9.20-alpine
+      - natsio/nats-box:0.13.8
+      - natsio/nats-server-config-reloader:0.11.0
+      - nginx:1.25.1
+      - quay.io/minio/mc:RELEASE.2024-01-11T05-49-32Z
+      - quay.io/minio/minio:RELEASE.2024-01-11T07-46-16Z

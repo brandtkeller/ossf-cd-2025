@@ -1,0 +1,67 @@
+{{ if .Values.guac.configMap.enabled }}
+# Copyright Kusari, Inc. and contributors
+# Licensed under the MIT license. See LICENSE file in the project root for details.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: guac-cm
+data:
+  guac.yaml: |
+
+{{- if $.Values.guac.pubSubAddr }}
+    pubsub-addr: {{ $.Values.guac.pubSubAddr }}
+{{- else }}
+    pubsub-addr: nats://{{ .Release.Name }}-nats.{{ .Release.Namespace }}.svc.cluster.local:4222
+{{- end }}
+
+    publish-to-queue: {{ $.Values.guac.collectorPublishToQueue }}
+
+{{- if $.Values.guac.blobAddr }}
+    blob-addr: {{ $.Values.guac.blobAddr }}
+{{- else }}
+    blob-addr: s3://bucketname?endpoint=http://{{ .Release.Namespace }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000&region=us-east-1&disable_https=true&use_path_style=true
+{{- end }}
+    
+
+    # CSub setup
+{{- with (index .Values.guac.collectSub.svcPorts 0) }}
+    csub-addr: {{ $.Values.guac.collectSub.name }}.{{ $.Release.Namespace }}.svc.cluster.local:{{ .targetPort }}
+    csub-listen-port: {{ .targetPort }}
+{{- end }}
+
+    # GQL setup
+{{- with (index .Values.guac.graphqlServer.svcPorts 0) }}
+    gql-backend: {{ $.Values.guac.graphqlServer.backend }}
+    gql-listen-port: {{ .targetPort }}
+    gql-debug: {{ $.Values.guac.graphqlServer.debug }}
+    gql-test-data: false
+    gql-addr: http://{{ $.Values.guac.graphqlServer.name }}.{{ $.Release.Namespace }}.svc.cluster.local:{{ .targetPort }}/query
+{{- end }}
+    
+    # Collector behavior
+    service-poll: true
+    use-csub: true
+
+    # Certifier behavior - i.e. OSV and CD
+{{- if $.Values.guac.common.certifier.dayBetweenRescan }}
+    last-scan: {{ .Values.guac.common.certifier.dayBetweenRescan }}
+{{- end }}
+{{- if $.Values.guac.common.certifier.batchSize }}
+    certifier-batch-size: {{ .Values.guac.common.certifier.batchSize }}
+{{- end }}
+{{- if $.Values.guac.common.certifier.latency }}
+    certifier-latency: {{ .Values.guac.common.certifier.latency }}
+{{- end }}
+
+    poll: true
+    interval: 5m     # how often to poll graphql-server to discover new packages
+
+{{ if eq $.Values.guac.graphqlServer.backend "ent" }}    
+    # Ent config
+    {{- range $key, $val := $.Values.guac.backend.ent }}
+    {{ $key }}: {{ $val }}
+    {{- end }}
+{{ end }}
+
+{{ end }}

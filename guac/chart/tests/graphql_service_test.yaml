@@ -1,0 +1,32 @@
+# Copyright Kusari, Inc. and contributors
+# Licensed under the MIT license. See LICENSE file in the project root for details.
+suite: GraphQL Service tests
+templates:
+  - graphql-server-service.yaml
+
+tests:
+  - it: service should render
+    values:
+      - "./values_graphql_service.yaml"
+    asserts:
+      - isKind:
+          of: Service
+      - hasDocuments:
+          count: 2
+      - matchRegex:
+          path: spec.type 
+          pattern: NodePort|ClusterIP
+
+  - it: should respect spec level parameters
+    values:
+      - ./values_digest_and_tag.yaml
+    asserts:
+      - equal:
+          path:  metadata.name
+          value:  graphql-server
+      - equal:
+          path:  metadata.labels["app.kubernetes.io/name"]
+          value:  graphql-server
+      - equal:
+          path:  spec.selector["app.kubernetes.io/name"]
+          value:  graphql-server

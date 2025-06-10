@@ -1,0 +1,1177 @@
+{
+    "title": "Chart Values",
+    "type": "object",
+    "properties": {
+        "imagePullSecrets": {
+            "type": "array",
+            "description": "Docker registry secret name for pulling images",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Docker registry secret name for pulling images"
+                    }
+                }
+            }
+        },
+        "guac": {
+            "type": "object",
+            "properties": {
+                "guacImage": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Path to the GUAC image",
+                            "default": "ghcr.io/guacsec/guac"
+                        },
+                        "digest": {
+                            "type": "string",
+                            "description": "Sha256 Image Digest.  It is strongly recommended to use this for verification.",
+                            "default": "\"\""
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "ImagePullPolicy for kubernetes",
+                            "default": "IfNotPresent"
+                        },
+                        "workingDir": {
+                            "type": "string",
+                            "description": "Working Directory for GUAC",
+                            "default": "/guac"
+                        }
+                    }
+                },
+                "common": {
+                    "type": "object",
+                    "properties": {
+                        "env": {
+                            "type": "string",
+                            "description": "common environment variables apply to all guac services",
+                            "default": "\"\""
+                        },
+                        "tolerations": {
+                            "type": "string",
+                            "description": "common tolerations apply to all guac services",
+                            "default": "\"\""
+                        },
+                        "certifier": {
+                            "type": "object",
+                            "properties": {
+                                "dayBetweenRescan": {
+                                    "type": "string",
+                                    "description": "Day(s) to wait before the certifier rescanning - commonly apply to all certifiers. Default 0 means only run once",
+                                    "default": "0"
+                                },
+                                "batchSize": {
+                                    "type": "string",
+                                    "description": "sets the batch size for pagination query for the certifier - commonly apply to all certifiers. Default 60000",
+                                    "default": "60000"
+                                },
+                                "latency": {
+                                    "type": "object",
+                                    "description": "sets artificial latency on the certifier - commonly apply to all certifiers. Defaults to empty string (not enabled) but can set m, h, s...etc.",
+                                    "default": null,
+                                    "nullable": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "configMap": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether to create the guac-cm configMap",
+                            "default": true
+                        }
+                    }
+                },
+                "ociCollector": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "String Whether to deploy OCI Collector",
+                            "default": true
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "String Name of the OCI Collector component.",
+                            "default": "oci-collector"
+                        },
+                        "replicas": {
+                            "type": "number",
+                            "description": "Number of replicas for oci collector deployment",
+                            "default": 1
+                        },
+                        "image": {
+                            "type": "object",
+                            "properties": {
+                                "command": {
+                                    "type": "array",
+                                    "description": "Command for the OCI Collector image.  It is not recommended to override this.",
+                                    "default": [
+                                        "sh",
+                                        "-c",
+                                        "/opt/guac/guaccollect image"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "env": {
+                            "type": "array",
+                            "description": "Environment variables for OCI Collector.",
+                            "default": [],
+                            "items": {}
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "description": "- sets the node selector for where to run the deployment",
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "description": "",
+                            "default": [],
+                            "items": {}
+                        },
+                        "serviceAccount": {
+                            "type": "object",
+                            "properties": {
+                                "create": {
+                                    "type": "boolean",
+                                    "description": "- whether to create OCI Collector service account",
+                                    "default": true
+                                },
+                                "annotations": {
+                                    "type": "object",
+                                    "description": "- OCI Collector service account annotations",
+                                    "default": {}
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "description": "- [map] resource requests or limits of the ociCollector deployment",
+                            "default": {}
+                        }
+                    }
+                },
+                "depsDevCollector": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "String Whether to deploy Deps.Dev Collector",
+                            "default": true
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "String Name of the Deps.Dev Collector component.",
+                            "default": "depsdev-collector"
+                        },
+                        "replicas": {
+                            "type": "number",
+                            "description": "Number of replicas for depsdev collector deployment",
+                            "default": 1
+                        },
+                        "image": {
+                            "type": "object",
+                            "properties": {
+                                "command": {
+                                    "type": "array",
+                                    "description": "Command for the Deps.Dev Collector image.  It is not recommended to override this.",
+                                    "default": [
+                                        "sh",
+                                        "-c",
+                                        "/opt/guac/guaccollect deps_dev"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "env": {
+                            "type": "array",
+                            "description": "Environment variables for Deps.Dev Collector.",
+                            "default": [],
+                            "items": {}
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "description": "- sets the node selector for where to run the deployment",
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "description": "",
+                            "default": [],
+                            "items": {}
+                        },
+                        "serviceAccount": {
+                            "type": "object",
+                            "properties": {
+                                "create": {
+                                    "type": "boolean",
+                                    "description": "- whether to create depsDevCollector service account",
+                                    "default": true
+                                },
+                                "annotations": {
+                                    "type": "object",
+                                    "description": "",
+                                    "default": {}
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "description": "- [map] resource requests or limits of the depsDevCollector deployment",
+                            "default": {}
+                        },
+                        "depsDevLatency": {
+                            "type": "object",
+                            "description": "- sets artificial latency on the deps.dev collector. Defaults to empty string (not enabled) but can set m, h, s...etc.",
+                            "default": null,
+                            "nullable": true
+                        }
+                    }
+                },
+                "osvCertifier": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "String Whether to deploy OSV Certifier",
+                            "default": true
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "String Name of the OSV Certifier component.",
+                            "default": "osv-certifier"
+                        },
+                        "replicas": {
+                            "type": "number",
+                            "description": "Number of replicas for OSV Certifier deployment",
+                            "default": 1
+                        },
+                        "image": {
+                            "type": "object",
+                            "properties": {
+                                "command": {
+                                    "type": "array",
+                                    "description": "Command for the OSV Certifier Collector image.  It is not recommended to override this.",
+                                    "default": [
+                                        "sh",
+                                        "-c",
+                                        "/opt/guac/guaccollect osv"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "env": {
+                            "type": "array",
+                            "description": "Environment variables for OSV Certifier.",
+                            "default": [],
+                            "items": {}
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "description": "- sets the node selector for where to run the deployment",
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "description": "",
+                            "default": [],
+                            "items": {}
+                        },
+                        "serviceAccount": {
+                            "type": "object",
+                            "properties": {
+                                "create": {
+                                    "type": "boolean",
+                                    "description": "- whether to create osvCertifier service account",
+                                    "default": true
+                                },
+                                "annotations": {
+                                    "type": "object",
+                                    "description": "- OSV Certifier service account annotations",
+                                    "default": {}
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "description": "- [map] resource requests or limits of the OSV Certifier deployment",
+                            "default": {}
+                        }
+                    }
+                },
+                "cdCertifier": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "String Whether to deploy CD Certifier",
+                            "default": true
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "String Name of the CD Certifier component.",
+                            "default": "cd-certifier"
+                        },
+                        "replicas": {
+                            "type": "number",
+                            "description": "Number of replicas for CD Certifier deployment",
+                            "default": 1
+                        },
+                        "image": {
+                            "type": "object",
+                            "properties": {
+                                "command": {
+                                    "type": "array",
+                                    "description": "Command for the CD Certifier Collector image.  It is not recommended to override this.",
+                                    "default": [
+                                        "sh",
+                                        "-c",
+                                        "/opt/guac/guaccollect cd"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "env": {
+                            "type": "array",
+                            "description": "Environment variables for CD Certifier.",
+                            "default": [],
+                            "items": {}
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "description": "- sets the node selector for where to run the deployment",
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "description": "",
+                            "default": [],
+                            "items": {}
+                        },
+                        "serviceAccount": {
+                            "type": "object",
+                            "properties": {
+                                "create": {
+                                    "type": "boolean",
+                                    "description": "- whether to create cdCertifier service account",
+                                    "default": true
+                                },
+                                "annotations": {
+                                    "type": "object",
+                                    "description": "- CD Certifier service account annotations",
+                                    "default": {}
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "description": "- [map] resource requests or limits of the cd Certifier deployment",
+                            "default": {}
+                        }
+                    }
+                },
+                "ingestor": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "String Whether to deploy Ingestor",
+                            "default": true
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "String Name of the ingestor component.",
+                            "default": "ingestor"
+                        },
+                        "replicas": {
+                            "type": "number",
+                            "description": "Number of replicas for ingestor deployment",
+                            "default": 1
+                        },
+                        "image": {
+                            "type": "object",
+                            "properties": {
+                                "command": {
+                                    "type": "array",
+                                    "description": "Command for the ingestor image.  It is not recommended to override this.",
+                                    "default": [
+                                        "sh",
+                                        "-c",
+                                        "/opt/guac/guacingest"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "env": {
+                            "type": "array",
+                            "description": "Environment variables for ingestor.",
+                            "default": [],
+                            "items": {}
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "description": "- sets the node selector for where to run the deployment",
+                            "default": {}
+                        },
+                        "serviceAccount": {
+                            "type": "object",
+                            "properties": {
+                                "create": {
+                                    "type": "boolean",
+                                    "description": "- whether to create ingestor service account",
+                                    "default": true
+                                },
+                                "annotations": {
+                                    "type": "object",
+                                    "description": "- Ingestor service account annotations",
+                                    "default": {}
+                                }
+                            }
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "description": "",
+                            "default": [],
+                            "items": {}
+                        },
+                        "resources": {
+                            "type": "object",
+                            "description": "- [map] resource requests or limits of the ingestor deployment",
+                            "default": {}
+                        }
+                    }
+                },
+                "collectSub": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "String Whether to deploy CollectSub",
+                            "default": true
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "String Name of the CollectSub component.",
+                            "default": "collectsub"
+                        },
+                        "replicas": {
+                            "type": "number",
+                            "description": "Number of replicas for CollectSub deployment",
+                            "default": 1
+                        },
+                        "image": {
+                            "type": "object",
+                            "properties": {
+                                "command": {
+                                    "type": "array",
+                                    "description": "Command for the CollectSub image.  It is not recommended to override this.",
+                                    "default": [
+                                        "sh",
+                                        "-c",
+                                        "/opt/guac/guaccsub"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "ports": {
+                                    "type": "array",
+                                    "description": "Port the CollectSub container listens on",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "containerPort": {
+                                                "type": "number",
+                                                "description": "Port the CollectSub container listens on"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "env": {
+                            "type": "array",
+                            "description": "Environment variables for CollectSub.",
+                            "default": [],
+                            "items": {}
+                        },
+                        "svcPorts": {
+                            "type": "array",
+                            "description": "Protocol used at CollectSub",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "protocol": {
+                                        "type": "string",
+                                        "description": "Protocol used at CollectSub"
+                                    },
+                                    "port": {
+                                        "type": "number",
+                                        "description": "Port the CollectSub service listens on"
+                                    },
+                                    "targetPort": {
+                                        "type": "number",
+                                        "description": "Port the CollectSub container listens on"
+                                    }
+                                }
+                            }
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "description": "- sets the node selector for where to run the deployment",
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "description": "",
+                            "default": [],
+                            "items": {}
+                        },
+                        "serviceAccount": {
+                            "type": "object",
+                            "properties": {
+                                "create": {
+                                    "type": "boolean",
+                                    "description": "- whether to create collectSub service account",
+                                    "default": true
+                                },
+                                "annotations": {
+                                    "type": "object",
+                                    "description": "- CollectSub service account annotations",
+                                    "default": {}
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "description": "- [map] resource requests or limits of the collectSub deployment",
+                            "default": {}
+                        }
+                    }
+                },
+                "graphqlServer": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "String Whether to deploy GraphQL Server",
+                            "default": true
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "String Name of the GraphQL Server component.",
+                            "default": "graphql-server"
+                        },
+                        "replicas": {
+                            "type": "number",
+                            "description": "Number of replicas for GraphQL Server deployment",
+                            "default": 1
+                        },
+                        "image": {
+                            "type": "object",
+                            "properties": {
+                                "command": {
+                                    "type": "array",
+                                    "description": "Command for the GraphQL Server image.  It is not recommended to override this.",
+                                    "default": [
+                                        "sh",
+                                        "-c",
+                                        "/opt/guac/guacgql"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "ports": {
+                                    "type": "array",
+                                    "description": "Port the GraphQL Server container listens on",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "containerPort": {
+                                                "type": "number",
+                                                "description": "Port the GraphQL Server container listens on"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "env": {
+                            "type": "array",
+                            "description": "Environment variables for GraphQL Server.",
+                            "default": [],
+                            "items": {}
+                        },
+                        "svcPorts": {
+                            "type": "array",
+                            "description": "Protocol used at the the GraphQL Server",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "protocol": {
+                                        "type": "string",
+                                        "description": "Protocol used at the the GraphQL Server"
+                                    },
+                                    "port": {
+                                        "type": "number",
+                                        "description": "Port the GraphQL Server service listens on"
+                                    },
+                                    "targetPort": {
+                                        "type": "number",
+                                        "description": "Port the GraphQL Server container listens on"
+                                    }
+                                }
+                            }
+                        },
+                        "backend": {
+                            "type": "string",
+                            "description": "which backend to use - keyvalue (default) | arango | ent.",
+                            "default": "keyvalue"
+                        },
+                        "debug": {
+                            "type": "boolean",
+                            "description": "Enable debug mode for graphql server; also enable the UI",
+                            "default": true
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "description": "- sets the node selector for where to run the deployment",
+                            "default": {}
+                        },
+                        "serviceAccount": {
+                            "type": "object",
+                            "properties": {
+                                "create": {
+                                    "type": "boolean",
+                                    "description": "- whether to create graphqlServer service account",
+                                    "default": true
+                                },
+                                "annotations": {
+                                    "type": "object",
+                                    "description": "- graphql server service account annotations",
+                                    "default": {}
+                                }
+                            }
+                        },
+                        "service": {
+                            "type": "object",
+                            "properties": {
+                                "createNodePortService": {
+                                    "type": "boolean",
+                                    "description": "- Whether to deploy a NodePort type service",
+                                    "default": false
+                                }
+                            }
+                        },
+                        "additionalVolumeMounts": {
+                            "type": "array",
+                            "description": "",
+                            "default": [],
+                            "items": {}
+                        },
+                        "additionalVolumes": {
+                            "type": "array",
+                            "description": "",
+                            "default": [],
+                            "items": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "description": "",
+                            "default": [],
+                            "items": {}
+                        },
+                        "resources": {
+                            "type": "object",
+                            "description": "- [map] resource requests or limits of the graphqlServer deployment",
+                            "default": {}
+                        }
+                    }
+                },
+                "restApi": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "String Whether to deploy the restApi",
+                            "default": true
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "String Name of the restApi component.",
+                            "default": "rest-api"
+                        },
+                        "replicas": {
+                            "type": "number",
+                            "description": "Number of replicas for restApi deployment",
+                            "default": 1
+                        },
+                        "image": {
+                            "type": "object",
+                            "properties": {
+                                "command": {
+                                    "type": "array",
+                                    "description": "Command for the restApi image.  It is not recommended to override this.",
+                                    "default": [
+                                        "sh",
+                                        "-c",
+                                        "/opt/guac/guacrest"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "ports": {
+                                    "type": "array",
+                                    "description": "Port the restApi container listens on",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "containerPort": {
+                                                "type": "number",
+                                                "description": "Port the restApi container listens on"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "env": {
+                            "type": "array",
+                            "description": "Environment variables for restApi.",
+                            "default": [],
+                            "items": {}
+                        },
+                        "svcPorts": {
+                            "type": "array",
+                            "description": "Protocol used at the the restApi",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "protocol": {
+                                        "type": "string",
+                                        "description": "Protocol used at the the restApi"
+                                    },
+                                    "port": {
+                                        "type": "number",
+                                        "description": "Port the restApi service listens on"
+                                    },
+                                    "targetPort": {
+                                        "type": "number",
+                                        "description": "Port the restApi container listens on"
+                                    }
+                                }
+                            }
+                        },
+                        "serviceAccount": {
+                            "type": "object",
+                            "properties": {
+                                "create": {
+                                    "type": "boolean",
+                                    "description": "- whether to create restApi service account",
+                                    "default": true
+                                },
+                                "annotations": {
+                                    "type": "object",
+                                    "description": "- graphql server service account annotations",
+                                    "default": {}
+                                }
+                            }
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "description": "- sets the node selector for where to run the deployment",
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "description": "",
+                            "default": [],
+                            "items": {}
+                        },
+                        "resources": {
+                            "type": "object",
+                            "description": "- [map] resource requests or limits of the restApi deployment",
+                            "default": {}
+                        }
+                    }
+                },
+                "visualizer": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "String Whether to deploy the visualizer.",
+                            "default": true
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "String Name of the visualizer.",
+                            "default": "visualizer"
+                        },
+                        "replicas": {
+                            "type": "number",
+                            "description": "Number of replicas for visualizer deployment",
+                            "default": 1
+                        },
+                        "image": {
+                            "type": "object",
+                            "properties": {
+                                "repository": {
+                                    "type": "string",
+                                    "description": "Path to the Ingestor image",
+                                    "default": "ghcr.io/guacsec/guac-visualizer"
+                                },
+                                "tag": {
+                                    "type": "string",
+                                    "description": "Tag if using an image tag.  Optional",
+                                    "default": "v0.0.3",
+                                    "nullable": true
+                                },
+                                "digest": {
+                                    "type": "string",
+                                    "description": "Sha256 Image Digest.  It is strongly recommended to use this for verification.",
+                                    "default": "\"\""
+                                },
+                                "pullPolicy": {
+                                    "type": "string",
+                                    "description": "ImagePullPolicy for kubernetes",
+                                    "default": "IfNotPresent"
+                                },
+                                "ports": {
+                                    "type": "array",
+                                    "description": "Port the visualizer container listens on",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "containerPort": {
+                                                "type": "number",
+                                                "description": "Port the visualizer container listens on"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "svcPorts": {
+                            "type": "array",
+                            "description": "Protocol used at the visualizer",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "protocol": {
+                                        "type": "string",
+                                        "description": "Protocol used at the visualizer"
+                                    },
+                                    "port": {
+                                        "type": "number",
+                                        "description": "Port the visualizer service listens on"
+                                    },
+                                    "targetPort": {
+                                        "type": "number",
+                                        "description": "Port the visualizer container listens on"
+                                    }
+                                }
+                            }
+                        },
+                        "env": {
+                            "type": "array",
+                            "description": "Environment variables for the visualizer.",
+                            "default": [],
+                            "items": {}
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "description": "- sets the node selector for where to run the deployment",
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "description": "",
+                            "default": [],
+                            "items": {}
+                        }
+                    }
+                },
+                "observability": {
+                    "type": "object",
+                    "properties": {
+                        "deployServiceMonitor": {
+                            "type": "boolean",
+                            "description": "Boolean Deploy the service monitor for observability",
+                            "default": false
+                        }
+                    }
+                },
+                "sampleData": {
+                    "type": "object",
+                    "properties": {
+                        "ingest": {
+                            "type": "boolean",
+                            "description": "Boolean Whether to ingest sample data after deployment",
+                            "default": false
+                        },
+                        "jobName": {
+                            "type": "string",
+                            "description": "Name of the sample data ingest job",
+                            "default": "ingest-guac-data"
+                        },
+                        "env": {
+                            "type": "array",
+                            "description": "Environment variables for the sample data ingest job",
+                            "default": [],
+                            "items": {}
+                        }
+                    }
+                },
+                "ingress": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether to deploy an Ingress object",
+                            "default": false
+                        }
+                    }
+                },
+                "apiOnlyIngress": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether to deploy an Ingress object to expose API only",
+                            "default": false
+                        }
+                    }
+                },
+                "traefikIngressRoute": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether to deploy Traefik IngressRoute object",
+                            "default": false
+                        }
+                    }
+                },
+                "backend": {
+                    "type": "object",
+                    "properties": {
+                        "ent": {
+                            "type": "object",
+                            "properties": {
+                                "db-driver": {
+                                    "type": "string",
+                                    "description": "database driver to use, one of [postgres | sqlite3 | mysql] or anything supported by sql.DB",
+                                    "default": "postgres"
+                                },
+                                "db-migrate": {
+                                    "type": "boolean",
+                                    "description": "Wether to automatically run database migrations on start",
+                                    "default": true
+                                },
+                                "db-debug": {
+                                    "type": "boolean",
+                                    "description": "Enable debug logging for database queries",
+                                    "default": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "collectorPublishToQueue": {
+                    "type": "boolean",
+                    "description": "Whether to publish ingestion message to pubsub queue",
+                    "default": true
+                },
+                "additionalResources": {
+                    "type": "object",
+                    "description": "",
+                    "default": {}
+                }
+            }
+        },
+        "nats": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Whether to deploy nats",
+                    "default": true
+                },
+                "nats": {
+                    "type": "object",
+                    "properties": {
+                        "jetstream": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Boolean for enabling JetStream.",
+                                    "default": true
+                                }
+                            }
+                        },
+                        "limits": {
+                            "type": "object",
+                            "properties": {
+                                "maxPayload": {
+                                    "type": "string",
+                                    "description": "Max Payload size for nats",
+                                    "default": "64MB"
+                                }
+                            }
+                        }
+                    }
+                },
+                "natsbox": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whehter to run natsbox",
+                            "default": false
+                        }
+                    }
+                },
+                "exporter": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Boolean to enable data collection",
+                            "default": false
+                        },
+                        "serviceMonitor": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Boolean to enable nats service monitor",
+                                    "default": false
+                                },
+                                "namespace": {
+                                    "type": "string",
+                                    "description": "String nats service monitor namespace - this is for monitoring purposes and is used by Prometheus",
+                                    "default": "monitoring"
+                                },
+                                "labels": {
+                                    "type": "object",
+                                    "properties": {
+                                        "release": {
+                                            "type": "string",
+                                            "description": "Label to associate nats service monitor with GUAC for monitoring purposes",
+                                            "default": "monitoring"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "minio": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Whehter to deploy minio as part of the Helm deployment",
+                    "default": true
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of replicas.",
+                    "default": 1
+                },
+                "mode": {
+                    "type": "string",
+                    "description": "minio mode, i.e. standalone or distributed",
+                    "default": "standalone"
+                },
+                "rootUser": {
+                    "type": "string",
+                    "description": "root user name.",
+                    "default": "rootUser"
+                },
+                "rootPassword": {
+                    "type": "string",
+                    "description": "root user password.",
+                    "default": "rootPassword"
+                }
+            }
+        },
+        "atlas": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Whether to add atlas init-container in graphql-server to manage schema migration via atlas. Defaults to false",
+                    "default": false
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "command": {
+                            "type": "array",
+                            "description": "Command for the atlas migration. Overriding default entrypoint to read backend DB connection string from guac-cm",
+                            "default": [
+                                "sh",
+                                "-c",
+                                "atlas migrate apply --dir file:///app/migrations --url $DB_ADDRESS?search_path=public"
+                            ],
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "repository": {
+                            "type": "string",
+                            "description": "Path to the atlas migration image",
+                            "default": "ghcr.io/guacsec/guac/atlas-migration"
+                        },
+                        "digest": {
+                            "type": "string",
+                            "description": "Sha256 Image Digest. It is strongly recommended to use this for verification.",
+                            "default": "\"\""
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "ImagePullPolicy for kubernetes",
+                            "default": "IfNotPresent"
+                        }
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the atlas migration component",
+                    "default": "atlas-migration"
+                }
+            }
+        }
+    }
+}

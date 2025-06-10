@@ -1,0 +1,141 @@
+# Copyright Kusari, Inc. and contributors
+# Licensed under the MIT license. See LICENSE file in the project root for details.
+{{- if .Values.guac.sampleData.ingest }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.guac.sampleData.jobName }}
+  labels:
+    {{- include "guac.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Values.guac.sampleData.jobName }}
+  annotations:
+    "helm.sh/hook": post-install, post-upgrade
+    "helm.sh/hook-weight": "10"
+spec:
+  backoffLimit: 5
+  template:
+    metadata:
+      labels:
+        {{- include "guac.labels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ .Values.guac.sampleData.jobName }}
+    spec:
+      containers:
+      - name: data-ingestor
+        image: "ubuntu:22.04"
+        command: ['sh', '-c', '/tmp/guac/ingest-guac-data.sh ingest-data']
+        workingDir: {{ .Values.guac.workingDir }}
+
+{{- if or .Values.guac.common.env .Values.guac.sampleData.env }}
+        env:
+{{- if .Values.guac.common.env }}
+{{ toYaml .Values.guac.common.env | indent 10 }}
+{{- end }}
+{{- if .Values.guac.sampleData.env }}
+{{ toYaml .Values.guac.sampleData.env | indent 10 }}
+{{- end }}
+{{- end }}
+
+        volumeMounts:
+          - name: guac-config
+            mountPath: {{ .Values.guac.guacImage.workingDir }}
+            readOnly: true
+          - name: ingest-guac-data
+            mountPath: /tmp/guac
+          - name: shared-data
+            mountPath: /shared-data
+      - name: data-preper
+        image: "ubuntu:22.04"
+        command: ['sh', '-c', '/tmp/guac/ingest-guac-data.sh prep-data']
+        workingDir: {{ .Values.guac.guacImage.workingDir }}
+        volumeMounts:
+          - name: guac-config
+            mountPath: {{ .Values.guac.guacImage.workingDir }}
+            readOnly: true
+          - name: ingest-guac-data
+            mountPath: /tmp/guac
+          - name: shared-data
+            mountPath: /shared-data
+      restartPolicy: OnFailure
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+      volumes:
+        - name: guac-config
+          configMap:
+            name: guac-cm
+        - name: ingest-guac-data
+          configMap:
+            name: {{ .Values.guac.sampleData.jobName }}
+            defaultMode: 0755
+        - name: shared-data
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.guac.sampleData.jobName }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.guac.sampleData.jobName }}
+    app.kubernetes.io/component: {{ .Values.guac.sampleData.jobName }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+data:
+  ingest-guac-data.sh: |
+    #!/usr/bin/env bash
+    set -e
+
+    SHARED_DATA=/shared-data
+    INDICATOR_FILE=${SHARED_DATA}/done_loading_data
+    GUAC_DATA_REPO=https://github.com/guacsec/guac-data.git
+
+    case "$1" in
+
+    prep-data)  echo  "Preparing sample data"
+        apt-get update && apt-get install -y git
+        git clone ${GUAC_DATA_REPO} ${SHARED_DATA}/guac-data
+        touch ${INDICATOR_FILE}
+        ;;
+
+    ingest-data)  echo "Ingesting sample data"
+        export GUACSEC_HOME="/guac"
+
+        apt-get update && apt-get install -y curl
+        curl -L https://github.com/guacsec/guac/releases/latest/download/guacone-linux-amd64 -o /tmp/guacone
+        curl -L https://github.com/guacsec/guac/releases/latest/download/guaccollect-linux-amd64 -o /tmp/guaccollect
+        chmod +x /tmp/guacone /tmp/guaccollect
+
+        while [ ! -f ${INDICATOR_FILE} ]
+        do
+            sleep 3
+        done
+
+        cd ${GUACSEC_HOME}
+
+        echo running guaccollect... at ${SHARED_DATA}/guac-data/docs
+        ls -la ${SHARED_DATA}/guac-data/docs
+        time /tmp/guaccollect files --service-poll=false ${SHARED_DATA}/guac-data/docs
+
+        sleep 3
+
+        echo running guacone collect...
+        time /tmp/guacone collect files ${SHARED_DATA}/guac-data/top-dh-sboms/zookeeper.json
+        # for d in guac-data/docs
+        # do 
+        # done
+
+
+
+        rm ${INDICATOR_FILE}
+        ;;
+
+    *) echo "$1 is not supported"
+        ;;
+    esac
+
+{{- end }}

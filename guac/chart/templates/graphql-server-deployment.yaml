@@ -1,0 +1,111 @@
+# Copyright Kusari, Inc. and contributors
+# Licensed under the MIT license. See LICENSE file in the project root for details.
+{{ if .Values.guac.graphqlServer.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.guac.graphqlServer.name }}
+{{- if .Values.guac.graphqlServer.annotations }}
+  annotations:
+{{ toYaml .Values.guac.graphqlServer.annotations | indent 4 }}
+{{- end }}
+  labels:
+    {{- include "guac.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Values.guac.graphqlServer.name }}
+    app.kubernetes.io/component: {{ .Values.guac.graphqlServer.name }}
+spec:
+  replicas:  {{ .Values.guac.graphqlServer.replicas }}
+  selector:
+    matchLabels:
+      {{- include "guac.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ .Values.guac.graphqlServer.name }}
+      app.kubernetes.io/component: {{ .Values.guac.graphqlServer.name }}
+  template:
+    metadata:
+      labels:
+        {{- include "guac.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ .Values.guac.graphqlServer.name }}
+        app.kubernetes.io/component: {{ .Values.guac.graphqlServer.name }}
+    spec:
+      serviceAccountName: {{ .Values.guac.graphqlServer.name }}
+{{- if .Values.atlas.enabled }}
+      initContainers:
+      - name: {{ .Values.atlas.name }}
+{{- if index .Values.guac.backend.ent "db-address" }}
+        env:
+        - name: DB_ADDRESS
+          value: '{{ index .Values.guac.backend.ent "db-address" }}'
+{{- end }}      
+        {{- if .Values.atlas.image.digest }}
+        image: "{{ .Values.atlas.image.repository }}@{{ .Values.atlas.image.digest }}"
+        {{- else }}
+        image: "{{ .Values.atlas.image.repository }}:{{ .Values.atlas.image.tag | default .Chart.AppVersion}}"
+        {{- end }}
+        imagePullPolicy: {{ .Values.atlas.image.pullPolicy }}
+        command:
+{{ toYaml .Values.atlas.image.command | indent 10 }}
+{{- end }}
+      containers:
+      - name: {{ .Values.guac.graphqlServer.name }}
+        {{- if .Values.guac.guacImage.digest }}
+        image: "{{ .Values.guac.guacImage.repository }}@{{ .Values.guac.guacImage.digest }}"
+        {{- else }}
+        image: "{{ .Values.guac.guacImage.repository }}:{{ .Values.guac.guacImage.tag | default .Chart.AppVersion}}"
+        {{- end }}
+        imagePullPolicy: "{{ .Values.guac.guacImage.pullPolicy }}"
+        command:
+{{ toYaml .Values.guac.graphqlServer.image.command | indent 10 }}
+        workingDir: {{ .Values.guac.guacImage.workingDir }}
+{{- if .Values.guac.graphqlServer.ports }}
+        ports:
+{{ toYaml .Values.guac.graphqlServer.image.ports | indent 10 }}
+{{- end }}
+{{- if .Values.guac.graphqlServer.resources }}
+        resources: {{- toYaml .Values.guac.graphqlServer.resources | nindent 10 }}
+{{- end }}
+        volumeMounts:
+          - name: guac-config
+            mountPath: {{ .Values.guac.guacImage.workingDir }}
+            readOnly: true
+{{- if .Values.guac.graphqlServer.additionalVolumeMounts }}
+{{ toYaml .Values.guac.graphqlServer.additionalVolumeMounts | indent 10 }}
+{{- end }}
+
+{{- if or .Values.guac.common.env .Values.guac.graphqlServer.env }}
+        env:
+{{- if .Values.guac.common.env }}
+{{ toYaml .Values.guac.common.env | indent 10 }}
+{{- end }}
+{{- if .Values.guac.graphqlServer.env }}
+{{ toYaml .Values.guac.graphqlServer.env | indent 10 }}
+{{- end }}
+{{- end }}
+
+{{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+{{- end }}
+      volumes:
+        - name: guac-config
+          configMap:
+            name: guac-cm
+{{- if .Values.guac.graphqlServer.additionalVolumes }}
+{{ toYaml .Values.guac.graphqlServer.additionalVolumes | indent 8 }}
+{{- end }}
+{{- if .Values.guac.graphqlServer.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.guac.graphqlServer.nodeSelector | indent 8 }}
+{{- end }}
+
+{{- if or .Values.guac.common.tolerations .Values.guac.graphqlServer.tolerations }}
+      tolerations:
+{{- if .Values.guac.common.tolerations }}
+{{ toYaml .Values.guac.common.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.guac.graphqlServer.tolerations }}
+{{ toYaml .Values.guac.graphqlServer.tolerations | indent 8 }}
+{{- end }}
+{{- end }}
+
+{{- end }}

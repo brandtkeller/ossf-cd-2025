@@ -1,0 +1,4 @@
+guac:
+  visualizer:
+    enabled: true
+    
