@@ -7,6 +7,34 @@ metadata:
   version: 0.6.2
 
 components:
+  - name: minio
+    required: true
+    charts:
+      - name: minio
+        version: 5.0.15
+        namespace: guac
+        url: https://charts.min.io/
+        valuesFiles:
+          - valuesFiles/minio-values.yaml
+    images:
+      - quay.io/minio/mc:RELEASE.2024-01-11T05-49-32Z
+      - quay.io/minio/minio:RELEASE.2024-01-11T07-46-16Z
+
+
+  - name: nats
+    required: true
+    charts:
+      - name: nats
+        version: 0.19.17
+        namespace: guac
+        url: https://nats-io.github.io/k8s/helm/charts/
+        valuesFiles:
+          - valuesFiles/nats-values.yaml
+    images:
+      - nats:2.9.20-alpine
+      - natsio/nats-box:0.13.8
+      - natsio/nats-server-config-reloader:0.11.0
+
   - name: guac
     required: true
     manifests:
@@ -20,13 +48,8 @@ components:
         url: https://guacsec.github.io/helm-charts
         namespace: guac
         valuesFiles:
-          - values.yaml
+          - valuesFiles/guac-values.yaml
     images:
       - ghcr.io/guacsec/guac-visualizer:v0.4.10
       - ghcr.io/guacsec/guac:v0.14.0
-      - nats:2.9.20-alpine
-      - natsio/nats-box:0.13.8
-      - natsio/nats-server-config-reloader:0.11.0
       - nginx:1.25.1
-      - quay.io/minio/mc:RELEASE.2024-01-11T05-49-32Z
-      - quay.io/minio/minio:RELEASE.2024-01-11T07-46-16Z

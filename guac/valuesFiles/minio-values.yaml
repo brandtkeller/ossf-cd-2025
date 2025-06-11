@@ -1,0 +1,19 @@
+replicas: 1
+persistence:
+  enabled: false
+mode: standalone
+resources:
+  requests:
+    memory: 300Mi
+rootUser: "rootUser"
+rootPassword: "rootPassword"
+buckets:
+  - name: bucketname
+    policy: none
+    purge: false
+    versioning: false
+    objectlocking: false
+users:
+  - accessKey: accessKey
+    secretKey: secretKey
+    policy: readwrite

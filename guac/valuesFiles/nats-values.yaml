@@ -1,0 +1,24 @@
+nats:
+  jetstream:
+    enabled: true
+  limits:
+    # change max payload from default 1MB to 64MB
+    maxPayload: 64MB
+  statefulSetPodLabels:
+    app.kubernetes.io/part-of: "guac"
+
+natsbox:
+  enabled: false
+  additionalLabels:
+    app.kubernetes.io/part-of: "guac"
+  podLabels:
+    app.kubernetes.io/part-of: "guac"
+
+exporter:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+    ## Specify the namespace where Prometheus Operator is running
+    namespace: monitoring
+    labels:
+      release: monitoring

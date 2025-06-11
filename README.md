@@ -8,6 +8,9 @@ The purpose of this repository is to serve as a central location for information
 
 - Zarf needs to support delivering the SBOM to the registry during deploy
 - GUAC needs to know how to read from the Zarf registry
+  - `guaccollect registry` will read from a registry
+    - How to specify target url?
+    - How to add credentials?
 - Attempt to use the visualizer to get feedback on package deployments and new sboms
 
 ## Constraints
@@ -15,7 +18,13 @@ The purpose of this repository is to serve as a central location for information
 - Trouble using local chart and building chart dependencies
 - Pods are restarting on initial release
   - Can we split the components up so that pods roll-out in the correct order?
+    - Split out minio/nats - still see some initial restarts 
 
 ## Modifications
 - Add a new service for the visualizer in order to add connect label
   - Make labels in chart more configurable per-service
+
+
+## Other Notes
+- [chainguard oci v1.1 blog](https://www.chainguard.dev/unchained/building-towards-oci-v1-1-support-in-cosign)
+  - Look at using cosign to validate the sbom delivery

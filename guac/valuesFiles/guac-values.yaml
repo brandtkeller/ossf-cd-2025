@@ -1,0 +1,20 @@
+guac:
+  pubSubAddr: nats://nats.guac.svc.cluster.local:4222
+  blobAddr: s3://bucketname?endpoint=http://minio.guac.svc.cluster.local:9000&region=us-east-1&disable_https=true&use_path_style=true
+  visualizer:
+    enabled: true
+    
+  ociCollector:
+    enabled: true
+    name: oci-collector
+    annotations:
+      reloader.stakater.com/auto: "true"
+    replicas: 1
+    image:
+      command: ['sh', '-c', '/opt/guac/guaccollect registry zarf-docker-registry.zarf.svc.cluster.local:5000']
+
+minio:
+  enabled: false
+
+nats:
+  enabled: false
