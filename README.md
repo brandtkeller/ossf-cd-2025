@@ -10,6 +10,7 @@ The purpose of this repository is to serve as a central location for information
 - GUAC needs to know how to read from the Zarf registry
   - `guaccollect registry` will read from a registry
     - How to specify target url?
+      - `guaccollect registry`
     - How to add credentials?
 - Attempt to use the visualizer to get feedback on package deployments and new sboms
 
