@@ -10,9 +10,20 @@ The purpose of this repository is to serve as a central location for information
 - GUAC needs to know how to read from the Zarf registry
   - `guaccollect registry` will read from a registry
     - How to specify target url?
-      - `guaccollect registry`
+      - `guaccollect registry <url>`
     - How to add credentials?
+      - We have a private-registry secret all ready in the namespace
+      - Can we mount this to the oci-collector?
 - Attempt to use the visualizer to get feedback on package deployments and new sboms
+  - Add a `connect` service
+- Validate assumptions with cosign
+  - Convert an existing sbom to a non-syft format
+    - `zarf tools sbom convert ghcr.io_guacsec_guac_v0.14.0.json -o spdx-json=sbom.spdx.json`
+  - port-forward to the registry
+  - Login to the registry
+  - Push to registry
+    - `export COSIGN_EXPERIMENTAL=1`
+    - `cosign attach sbom --sbom sbom.spdx.json --type spdx --registry-referrers-mode oci-1-1 localhost:41469/guacsec/guac:v0.14.`
 
 ## Constraints
 - The zarf registry - Distribution/Distribution@3.0.0 does not support the referral API

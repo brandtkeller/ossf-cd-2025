@@ -7,11 +7,9 @@ guac:
   ociCollector:
     enabled: true
     name: oci-collector
-    annotations:
-      reloader.stakater.com/auto: "true"
     replicas: 1
     image:
-      command: ['sh', '-c', '/opt/guac/guaccollect registry zarf-docker-registry.zarf.svc.cluster.local:5000']
+      command: ['sh', '-c', '/opt/guac/guaccollect registry http://zarf-docker-registry.zarf.svc.cluster.local:5000']
 
 minio:
   enabled: false
