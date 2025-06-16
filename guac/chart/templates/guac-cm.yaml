@@ -41,7 +41,7 @@ data:
     
     # Collector behavior
     service-poll: true
-    use-csub: true
+    use-csub: false
 
     # Certifier behavior - i.e. OSV and CD
 {{- if $.Values.guac.common.certifier.dayBetweenRescan }}
@@ -56,6 +56,7 @@ data:
 
     poll: true
     interval: 5m     # how often to poll graphql-server to discover new packages
+    log-level: debug
 
 {{ if eq $.Values.guac.graphqlServer.backend "ent" }}    
     # Ent config

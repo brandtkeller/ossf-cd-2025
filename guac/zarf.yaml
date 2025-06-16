@@ -45,11 +45,12 @@ components:
     charts:
       - name: guac
         version: 0.6.2
-        url: https://guacsec.github.io/helm-charts
+        # url: https://guacsec.github.io/helm-charts
+        localPath: chart
         namespace: guac
         valuesFiles:
           - valuesFiles/guac-values.yaml
     images:
       - ghcr.io/guacsec/guac-visualizer:v0.4.10
-      - ghcr.io/guacsec/guac:v0.14.0
+      - ghcr.io/guacsec/guac:v0.0.0-local-organic-guac-amd64
       - nginx:1.25.1
