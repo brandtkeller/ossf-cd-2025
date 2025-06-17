@@ -21,6 +21,9 @@ guac:
   osvCertifier:
     enabled: false
 
+  cdCertifier:
+    enabled: false
+
 minio:
   enabled: false
 

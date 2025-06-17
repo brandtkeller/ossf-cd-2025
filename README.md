@@ -4,6 +4,17 @@ The purpose of this repository is to serve as a central location for information
 
 [Enhancing Supply Chain Security: Integrating Zarf and GUAC for Seamless SBOM Generation and Delivery](https://sched.co/1zhnb)
 
+## State
+- [guac](git@github.com:brandtkeller/guac.git) - `openssf_zarf_integration`
+- [zarf](git@github.com:zarf-dev/zarf.git) - `openssf_guac_integration`
+
+## Worflow
+
+- Zarf will perform package creation through the standard process
+- On package deploy - we create a temporary sbom directory with the sbom tarball decompressed
+  - Pass this information on to the image deployment if possible
+  - 
+
 ## Prerequisites
 
 - Zarf needs to support delivering the SBOM to the registry during deploy
@@ -23,8 +34,8 @@ The purpose of this repository is to serve as a central location for information
   - Login to the registry
   - Push to registry
     - `export COSIGN_EXPERIMENTAL=1`
-    - `cosign attach sbom --sbom sbom.spdx.json --type spdx --registry-referrers-mode oci-1-1 localhost:5001/guacsec/guac:v0.14.0`
-    - `cosign attach sbom --sbom sbom.spdx.json --type spdx --registry-referrers-mode legacy 127.0.0.1:5001/guacsec/guac:v0.0.0-local-organic-guac-amd64`
+    - `cosign attach sbom --sbom guac-sbom.spdx.json --type spdx --registry-referrers-mode oci-1-1 127.0.0.1:39603/guacsec/guac:v0.0.0-local-organic-guac-amd64`
+    - `cosign attach sbom --sbom guac-sbom.spdx.json --type spdx --registry-referrers-mode legacy 127.0.0.1:39603/guacsec/guac:v0.0.0-local-organic-guac-amd64`
   - registry credentials are not available in the `private registry` secret for the zarf internal dns name
     - Could we add this with the same secret?
 
@@ -49,3 +60,8 @@ The purpose of this repository is to serve as a central location for information
 - guaccollect does not permit an IP:PORT target - hostname looks to be required
 - validate if we need the depdev collector or osv certifier
   - turned off for now
+
+# Presentation
+
+## TODO
+- Ensure the demonstration works locally & offline repeatably
