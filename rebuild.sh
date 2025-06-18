@@ -6,9 +6,9 @@ kind create cluster -n zarf
 sleep 15
 ../zarf/build/zarf package deploy zarf-init-amd64-v0.56.0.tar.zst --confirm
 
-# # rebuild the guac image
-# cd ../guac
-# make build_local_container
+# rebuild the guac image
+cd ../guac
+make build_local_container
 
 cd ../ossf-cd-2025
 ../zarf/build/zarf package create guac/
