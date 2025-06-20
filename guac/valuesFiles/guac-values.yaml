@@ -2,7 +2,7 @@ guac:
   guacImage:
     repository: ghcr.io/guacsec/guac
     # if not set appVersion field from Chart.yaml is used
-    tag: v0.0.0-local-organic-guac-amd64
+    tag: v0.0.0-local-organic-guac-arm64
   pubSubAddr: nats://nats.guac.svc.cluster.local:4222
   blobAddr: s3://bucketname?endpoint=http://minio.guac.svc.cluster.local:9000&region=us-east-1&disable_https=true&use_path_style=true
   visualizer:

@@ -8,6 +8,8 @@ The purpose of this repository is to serve as a central location for information
 - [guac](git@github.com:brandtkeller/guac.git) - `openssf_zarf_integration`
 - [zarf](git@github.com:zarf-dev/zarf.git) - `openssf_guac_integration`
 
+[init package](https://github.com/zarf-dev/zarf/releases/download/v0.56.0/zarf-init-arm64-v0.56.0.tar.zst)
+
 ## Worflow
 
 - Zarf will perform package creation through the standard process

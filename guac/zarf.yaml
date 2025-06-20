@@ -52,5 +52,5 @@ components:
           - valuesFiles/guac-values.yaml
     images:
       - ghcr.io/guacsec/guac-visualizer:v0.4.10
-      - ghcr.io/guacsec/guac:v0.0.0-local-organic-guac-amd64
+      - ghcr.io/guacsec/guac:v0.0.0-local-organic-guac-arm64
       - nginx:1.25.1
