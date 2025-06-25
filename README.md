@@ -14,8 +14,8 @@ The purpose of this repository is to serve as a central location for information
 
 - Zarf will perform package creation through the standard process
 - On package deploy - we create a temporary sbom directory with the sbom tarball decompressed
-  - Pass this information on to the image deployment if possible
-  - 
+  - Pass this information on to the image push process
+  - Push the sbom to the registry after the image is pushed
 
 ## Prerequisites
 
@@ -65,5 +65,9 @@ The purpose of this repository is to serve as a central location for information
 
 # Presentation
 
-## TODO
-- Ensure the demonstration works locally & offline repeatably
+- Demonstrate the laptop is offline
+- Create a kind cluster & zarf init
+- Deploy the guac package
+- Review the guac visualizer
+- Deploy the podinfo package
+- Review the guac visualizer
