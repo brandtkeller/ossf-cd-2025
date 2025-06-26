@@ -4,20 +4,25 @@ The purpose of this repository is to serve as a central location for information
 
 [Enhancing Supply Chain Security: Integrating Zarf and GUAC for Seamless SBOM Generation and Delivery](https://sched.co/1zhnb)
 
+## General Information
+
+This repository serves as an example of Conference-driven Development. This integration required changes to Zarf and GUAC - of which this exploration is intended to be used to drive changes back upstream upon completion.
+
 ## State
 - [guac](git@github.com:brandtkeller/guac.git) - `openssf_zarf_integration`
 - [zarf](git@github.com:zarf-dev/zarf.git) - `openssf_guac_integration`
 
 [init package](https://github.com/zarf-dev/zarf/releases/download/v0.56.0/zarf-init-arm64-v0.56.0.tar.zst)
 
-## Worflow
+## Workflow
 
 - Zarf will perform package creation through the standard process
-- On package deploy - we create a temporary sbom directory with the sbom tarball decompressed
-  - Pass this information on to the image push process
-  - Push the sbom to the registry after the image is pushed
+- On package deploy - we will deploy the associated sboms in the package to the registry
+- An airgap-ready and deployed instance of GUAC will be monitoring the Zarf internal docker registry and consuming SBOMs using the OCI collector.
 
 ## Prerequisites
+
+This serves as live notes from throughout the investigation process. There are a variety of things to consider when building this integration and constraints to discover along the way. 
 
 - Zarf needs to support delivering the SBOM to the registry during deploy
 - GUAC needs to know how to read from the Zarf registry
